@@ -75,7 +75,7 @@ int cmd_rlCC(int argc, char **argv)
         // Fun example: hello message based on name
         if (strcmp("Nishanth", argv[2]) == 0) {
             // Wow, happy to talk to Nathan!
-            debug_printf("Nishanth, your code works!!!\r\n");
+            debug_printf("Nishanth, your RLCC code works!!!\r\n");
             debug_print("\r\n");
 
             // Indicate success, but hide SUCCESS message
@@ -108,12 +108,16 @@ int cmd_rlCC(int argc, char **argv)
         return CMD_SUCCESS;
     }
 
-//    if (argc == 3 && strcmp("freq", argv[1]) == 0){
-//   		double freq = strtod(argv[2], NULL);
-//   		currentRegulator_U.omega_e = freq*2*PI;
-//
-//   		return CMD_SUCCESS;
-//   	}
+    if (argc == 3 && strcmp("freq", argv[1]) == 0){
+   		double freq = strtod(argv[2], NULL);
+   		if (freq > freqLim){
+   					debug_printf("Value too high. Cannot exceed 300Hz\n");
+   				return CMD_INVALID_ARGUMENTS;
+   		}
+   		currentRegulator_U.omega_e = freq*2*PI;
+
+   		return CMD_SUCCESS;
+   	}
     if (argc == 3 && strcmp("id", argv[1]) == 0){
 		double id = strtod(argv[2], NULL);
 

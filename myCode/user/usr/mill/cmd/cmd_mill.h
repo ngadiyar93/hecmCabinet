@@ -1,7 +1,7 @@
 #ifndef CMD_MILL_H
 #define CMD_MILL_H
 
-#define IdLim (15)
+#define IdLim (50)
 #define omega_max (1000)
 
 // Called in app init function to register command with system

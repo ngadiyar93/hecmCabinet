@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'currentRegulator'.
  *
- * Model version                  : 2.16
+ * Model version                  : 2.21
  * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Sun Mar 27 15:24:00 2022
+ * C/C++ source code generated on : Sun Apr  3 14:02:39 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)

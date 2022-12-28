@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'currentRegulator'.
  *
- * Model version                  : 2.16
+ * Model version                  : 2.21
  * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Sun Mar 27 15:24:00 2022
+ * C/C++ source code generated on : Sun Apr  3 14:02:39 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -145,7 +145,7 @@ void currentRegulator_step(void)
    *  Inport: '<Root>/omega_e'
    *  Sum: '<S46>/Sum'
    */
-  rtb_Sum1_j = (0.16444352585950411 * rtb_Sum4 +
+  rtb_Sum1_j = (0.13703627154958675 * rtb_Sum4 +
                 currentRegulator_DW.Integrator_DSTATE) +
     -currentRegulator_U.omega_e * 4.3040000000000008e-5 * currentRegulator_Y.Iq;
 
@@ -164,7 +164,7 @@ void currentRegulator_step(void)
    *  Inport: '<Root>/omega_e'
    *  Sum: '<S94>/Sum'
    */
-  rtb_Fbeta = (0.16225697737260567 * rtb_Sum5 +
+  rtb_Fbeta = (0.13521414781050473 * rtb_Sum5 +
                currentRegulator_DW.Integrator_DSTATE_m) + 4.362e-5 *
     currentRegulator_Y.Id * currentRegulator_U.omega_e;
 
@@ -216,13 +216,13 @@ void currentRegulator_step(void)
   /* Update for DiscreteIntegrator: '<S37>/Integrator' incorporates:
    *  Gain: '<S34>/Integral Gain'
    */
-  currentRegulator_DW.Integrator_DSTATE += 172.28494112286424 * rtb_Sum4 *
+  currentRegulator_DW.Integrator_DSTATE += 143.57078426905352 * rtb_Sum4 *
     0.0001;
 
   /* Update for DiscreteIntegrator: '<S85>/Integrator' incorporates:
    *  Gain: '<S82>/Integral Gain'
    */
-  currentRegulator_DW.Integrator_DSTATE_m += 172.28494112286424 * rtb_Sum5 *
+  currentRegulator_DW.Integrator_DSTATE_m += 143.57078426905352 * rtb_Sum5 *
     0.0001;
 }
 

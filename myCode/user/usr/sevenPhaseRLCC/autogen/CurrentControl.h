@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'CurrentControl'.
  *
- * Model version                  : 2.23
+ * Model version                  : 2.24
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Fri Dec  2 09:31:32 2022
+ * C/C++ source code generated on : Tue Dec 13 10:08:47 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -25,6 +25,7 @@
 #endif                                 /* CurrentControl_COMMON_INCLUDES_ */
 
 #include "CurrentControl_types.h"
+#include "rtGetNaN.h"
 #include "rt_nonfinite.h"
 #include "rtGetInf.h"
 
@@ -39,11 +40,10 @@
 
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
-  real_T Delay_DSTATE;                 /* '<Root>/Delay' */
-  real_T Delay_DSTATE_g;               /* '<S9>/Delay' */
+  real_T Delay_DSTATE;                 /* '<S9>/Delay' */
   real_T Delay_DSTATE_d;               /* '<S10>/Delay' */
   real_T Delay_DSTATE_c;               /* '<S11>/Delay' */
-  real_T Delay_DSTATE_gq;              /* '<S13>/Delay' */
+  real_T Delay_DSTATE_g;               /* '<S13>/Delay' */
   real_T Delay_DSTATE_i;               /* '<S12>/Delay' */
   real_T Delay_DSTATE_m;               /* '<S14>/Delay' */
 } DW_CurrentControl_T;

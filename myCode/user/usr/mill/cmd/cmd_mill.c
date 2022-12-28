@@ -6,9 +6,10 @@
 #include "sys/defines.h"
 #include "sys/util.h"
 #include "usr/mill/task_mill.h"
+//#include "usr/mill/task_mill.c"
 #include <stdlib.h>
 #include <string.h>
-#include "usr/mill/autogen/millController.h"
+#include "usr/mill/autogen/PMSMController.h"
 
 // Stores command entry for command system module
 static command_entry_t cmd_entry;
@@ -18,9 +19,8 @@ static command_entry_t cmd_entry;
 static command_help_t cmd_help[] = {
     { "hello <name>", "Print hello to screen" },
     { "init", "Start task" },
-    { "Vdc", "Set bus voltage reference [V]" },
     { "Speed", "Set speed reference [RPM]" },
-	{ "id", "Set d axis-current ref [A]"},
+	{ "id", "Set d axis-current ref [A]"}
 };
 
 void cmd_mill_register(void)
@@ -74,7 +74,7 @@ int cmd_mill(int argc, char **argv)
         // Fun example: hello message based on name
         if (strcmp("Nishanth", argv[2]) == 0) {
             // Wow, happy to talk to Nathan!
-            debug_printf("Nishanth, your code works!!!\r\n");
+            debug_printf("Nishanth, your Mill test code works!!!\r\n");
             debug_print("\r\n");
 
             // Indicate success, but hide SUCCESS message
@@ -106,12 +106,6 @@ int cmd_mill(int argc, char **argv)
         return CMD_SUCCESS;
     }
 
-    if (argc == 3 && strcmp("Vdc", argv[1]) == 0){
-   		double V_dc = strtod(argv[2], NULL);
-   		PMSMController_U.V_dc = V_dc;
-
-   		return CMD_SUCCESS;
-   	}
     if (argc == 3 && strcmp("id", argv[1]) == 0){
 		double id = strtod(argv[2], NULL);
 

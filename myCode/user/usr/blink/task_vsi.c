@@ -43,66 +43,66 @@ void task_vsi_init(void)
     scheduler_tcb_register(&tcb);
 }
 
-int read_cs(cabinet_cs_e cs, double *adc_volts_out)
-{
-    int err = FAILURE;
-    int32_t out = 0;
-
-    switch (cs) {
-    case CABINET_CS_SUS_U:
-        err = motherboard_get_data(MB_IN1, &out);
-        *adc_volts_out = 0.00125 * (double) out;
-        break;
-
-    case CABINET_CS_SUS_V:
-        err = motherboard_get_data(MB_IN3, &out);
-        *adc_volts_out = 0.00125 * (double) out;
-        break;
-
-    case CABINET_CS_SUS_W:
-        err = motherboard_get_data(MB_IN2, &out);
-        *adc_volts_out = 0.00125 * (double) out;
-        break;
-
-    case CABINET_CS_TOR_U:
-		err = motherboard_get_data(MB_IN4, &out);
-		*adc_volts_out = 0.00125 * (double) out;
-		break;
-
-	case CABINET_CS_TOR_V:
-		err = motherboard_get_data(MB_IN5, &out);
-		*adc_volts_out = 0.00125 * (double) out;
-		break;
-
-	case CABINET_CS_TOR_W:
-		err = motherboard_get_data(MB_IN6, &out);
-		*adc_volts_out = 0.00125 * (double) out;
-		break;
-
-    default:
-        err = FAILURE;
-    }
-
-    // Magic delta value to deal with odd analog design... :(
-    // Specific to CurrentCard design, perhaps VoltageCard as well.
-    //
-    // ==> at 0A input, the CurrentCard ADC voltage input is mid-rail,
-    //     about 2.4V, and -FS current is about 0.2V, +FS is ~4.8V.
-    //
-    //     The binary ADC codes for these are odd, they go from
-    //     negative to positive weirdly. I haven't debugged if
-    //     this is actually correct of not... So, this DELTA value
-    //     shifts them around to get a nice linear output
-    //     relative to the current input value.
-    double DELTA = (double) 0xFFFF * 0.00125 / 2.0;
-    if (*adc_volts_out > 0) {
-        *adc_volts_out -= DELTA;
-    } else {
-        *adc_volts_out += DELTA;
-    }
-
-    return err;
-}
+//int read_cs(cabinet_cs_e cs, double *adc_volts_out)
+//{
+//    int err = FAILURE;
+//    int32_t out = 0;
+//
+//    switch (cs) {
+//    case CABINET_CS_SUS_U:
+//        err = motherboard_get_data(MOTHERBOARD_1_BASE_ADDR, MB_IN1, &out);
+//        *adc_volts_out = 0.00125 * (double) out;
+//        break;
+//
+//    case CABINET_CS_SUS_V:
+//        err = motherboard_get_data(MOTHERBOARD_1_BASE_ADDR, MB_IN3, &out);
+//        *adc_volts_out = 0.00125 * (double) out;
+//        break;
+//
+//    case CABINET_CS_SUS_W:
+//        err = motherboard_get_data(MOTHERBOARD_1_BASE_ADDR, MB_IN2, &out);
+//        *adc_volts_out = 0.00125 * (double) out;
+//        break;
+//
+//    case CABINET_CS_TOR_U:
+//		err = motherboard_get_data(MOTHERBOARD_1_BASE_ADDR, MB_IN4, &out);
+//		*adc_volts_out = 0.00125 * (double) out;
+//		break;
+//
+//	case CABINET_CS_TOR_V:
+//		err = motherboard_get_data(MOTHERBOARD_1_BASE_ADDR, MB_IN5, &out);
+//		*adc_volts_out = 0.00125 * (double) out;
+//		break;
+//
+//	case CABINET_CS_TOR_W:
+//		err = motherboard_get_data(MOTHERBOARD_1_BASE_ADDR, MB_IN6, &out);
+//		*adc_volts_out = 0.00125 * (double) out;
+//		break;
+//
+//    default:
+//        err = FAILURE;
+//    }
+//
+//    // Magic delta value to deal with odd analog design... :(
+//    // Specific to CurrentCard design, perhaps VoltageCard as well.
+//    //
+//    // ==> at 0A input, the CurrentCard ADC voltage input is mid-rail,
+//    //     about 2.4V, and -FS current is about 0.2V, +FS is ~4.8V.
+//    //
+//    //     The binary ADC codes for these are odd, they go from
+//    //     negative to positive weirdly. I haven't debugged if
+//    //     this is actually correct of not... So, this DELTA value
+//    //     shifts them around to get a nice linear output
+//    //     relative to the current input value.
+//    double DELTA = (double) 0xFFFF * 0.00125 / 2.0;
+//    if (*adc_volts_out > 0) {
+//        *adc_volts_out -= DELTA;
+//    } else {
+//        *adc_volts_out += DELTA;
+//    }
+//
+//    return err;
+//}
 
 
 void task_vsi_callback(void *arg)

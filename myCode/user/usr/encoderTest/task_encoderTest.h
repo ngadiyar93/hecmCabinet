@@ -23,6 +23,8 @@ int task_encoderTest_deinit(void);
 // Callback function which scheduler calls periodically
 void task_encoderTest_callback(void *arg);
 
+double read_encoder(void);
+
 // Print the statistics gathered by the scheduler
 void task_encoderTest_stats_print(void);
 

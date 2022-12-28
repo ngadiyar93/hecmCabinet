@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'PMSMController'.
  *
- * Model version                  : 2.36
+ * Model version                  : 2.37
  * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Tue Mar 29 20:33:52 2022
+ * C/C++ source code generated on : Tue Apr  5 10:30:00 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -38,11 +38,11 @@
 
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
+  real_T Integrator_DSTATE;            /* '<S89>/Integrator' */
   real_T Delay_DSTATE;                 /* '<S5>/Delay' */
   real_T Delay1_DSTATE;                /* '<S5>/Delay1' */
-  real_T Integrator_DSTATE;            /* '<S41>/Integrator' */
-  real_T Integrator_DSTATE_d;          /* '<S137>/Integrator' */
-  real_T Integrator_DSTATE_e;          /* '<S89>/Integrator' */
+  real_T Integrator_DSTATE_d;          /* '<S41>/Integrator' */
+  real_T Integrator_DSTATE_dp;         /* '<S137>/Integrator' */
   real_T Delay2_DSTATE;                /* '<Root>/Delay2' */
 } DW_PMSMController_T;
 
@@ -62,6 +62,8 @@ typedef struct {
   real_T normalizedvoltages[3];        /* '<Root>/normalized voltages' */
   real_T T_ref;                        /* '<Root>/T_ref' */
   real_T omega_e;                      /* '<Root>/omega_e' */
+  real_T Id;                           /* '<Root>/Id' */
+  real_T Iq;                           /* '<Root>/Iq' */
 } ExtY_PMSMController_T;
 
 /* Real-time Model Data Structure */

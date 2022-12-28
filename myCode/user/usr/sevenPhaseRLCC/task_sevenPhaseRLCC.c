@@ -9,11 +9,19 @@
 #include "drv/motherboard.h"
 #include "usr/sevenPhaseRLCC/autogen/CurrentControl.h"
 #include "drv/encoder.h"
+#include "drv/analog.h"
 #include "usr/encoderTest/task_encoderTest.h"
+//#include "sys/injection.h"
+//#include "sys/util.h"
+//#include "sys/defines.h"
+//#include "sys/cmd/cmd_inj.h"
 
 
 // Scheduler TCB which holds task "context"
 static task_control_block_t tcb;
+
+// Initialize signal injection points
+static inj_ctx_t inj_ctx_ctrl[6] = { 0 };
 
 // Example logging variables for testing
 double LOG_Iu = 0;
@@ -59,7 +67,7 @@ int task_sevenPhaseRLCC_init(void)
 	    scheduler_tcb_init(&tcb, task_sevenPhaseRLCC_callback, NULL, "sevenPhaseRLCC", TASK_SEVENPHASERLCC_INTERVAL_USEC);
 	    pwm_disable();
 	    pwm_set_switching_freq(f_sw);
-		pwm_set_all_duty_midscale();
+		//pwm_set_all_duty_midscale();
 		pwm_enable();
 
 
@@ -81,18 +89,34 @@ int task_sevenPhaseRLCC_init(void)
 		CurrentControl_U.iq5_ref = 0;
 
 
-		CurrentControl_initialize();
+//		CurrentControl_initialize();
 		encoder_set_pulses_per_rev_bits(14);
+
+//	    injection_ctx_init(&inj_ctx_ctrl[0], "Id*");
+//	    injection_ctx_init(&inj_ctx_ctrl[1], "Iq*");
+//	    injection_ctx_init(&inj_ctx_ctrl[2], "Id3*");
+//	    injection_ctx_init(&inj_ctx_ctrl[3], "Iq3*");
+//	    injection_ctx_init(&inj_ctx_ctrl[4], "Id5*");
+//	    injection_ctx_init(&inj_ctx_ctrl[5], "Iq5*");
+
+
+//	    // Register all signal injection points
+//	    for (int i = 0; i < ARRAY_SIZE(inj_ctx_ctrl); i++) {
+//	        injection_ctx_register(&inj_ctx_ctrl[i]);
+//	    }
 
 	    // Register task with scheduler
 	    return scheduler_tcb_register(&tcb);
 }
 
-//int task_sevenPhaseRLCC_deinit(void)
-//{
-       // Unregister task with scheduler
-//    return scheduler_tcb_unregister(&tcb);
-//}
+int task_sevenPhaseRLCC_deinit(void)
+{
+//	for (int i = 0; i < ARRAY_SIZE(inj_ctx_ctrl); i++) {
+//		        injection_ctx_clear(&inj_ctx_ctrl[i]);
+//		    }
+        //Unregister task with scheduler
+    return scheduler_tcb_unregister(&tcb);
+}
 
 
 int read_cs(cabinet_cs_e cs, double *adc_volts_out)
@@ -161,8 +185,58 @@ int read_cs(cabinet_cs_e cs, double *adc_volts_out)
     return err;
 }
 
+//static double Id_star = 0;
+//static double Iq_star = 0;
+//static double Id3_star = 0;
+//static double Iq3_star = 0;
+//static double Id5_star = 0;
+//static double Iq5_star = 0;
+
+double Ts_local = 1.0/(double)TASK_SEVENPHASERLCC_UPDATES_PER_SEC;
+
+int task_read_Bfield(void)
+
+{//   float V_gain = 1.03;
+
+//    float V_offset = 2.536;
+      float V_gain = 1.1;
+
+      float V_offset = 2.524;
+
+      float V_meas;
+
+        int err = analog_getf(ANALOG_IN1, &V_meas);
+
+        if (err == SUCCESS) {
+
+               float flux_density = (V_meas - V_offset)/V_gain;
+
+               cmd_resp_printf("%f\r\n", flux_density);
+
+        }
+
+        return err;
+
+}
+
+
 void task_sevenPhaseRLCC_callback(void *arg)
 {
+	// Injection active
+//		 injection_inj(&Id_star, &inj_ctx_ctrl[0], Ts_local);
+//		 injection_inj(&Iq_star, &inj_ctx_ctrl[1], Ts_local);
+//		 injection_inj(&Id3_star, &inj_ctx_ctrl[0], Ts_local);
+//		 injection_inj(&Iq3_star, &inj_ctx_ctrl[1], Ts_local);
+//		 injection_inj(&Id5_star, &inj_ctx_ctrl[0], Ts_local);
+//		 injection_inj(&Iq5_star, &inj_ctx_ctrl[1], Ts_local);
+//
+//		 CurrentControl_U.id_ref = Id_star;
+//		 CurrentControl_U.iq_ref = Iq_star;
+//		 CurrentControl_U.id3_ref= Id3_star;
+//		 CurrentControl_U.iq3_ref = Iq3_star;
+//		 CurrentControl_U.id5_ref = Id5_star;
+//		 CurrentControl_U.iq5_ref = Iq5_star;
+		 //
 
 	// call the current controller
 
@@ -246,7 +320,7 @@ void task_sevenPhaseRLCC_callback(void *arg)
 		pwm_set_duty(8, VzDuty);
 		pwm_set_duty(9, VaDuty);
 
-		//LOG_theta_enc = read_encoder();
+		LOG_theta_enc = read_encoder();
 
 }
 

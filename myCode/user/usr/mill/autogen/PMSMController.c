@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'PMSMController'.
  *
- * Model version                  : 2.36
+ * Model version                  : 2.37
  * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Tue Mar 29 20:33:52 2022
+ * C/C++ source code generated on : Tue Apr  5 10:30:00 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -36,15 +36,15 @@ RT_MODEL_PMSMController_T *const PMSMController_M = &PMSMController_M_;
 /* Model step function */
 void PMSMController_step(void)
 {
-  real_T rtb_Integrator_f;
   real_T rtb_Sum1_b;
   real_T rtb_Sum1_f;
   real_T rtb_Sum4;
-  real_T rtb_Sum5;
   real_T rtb_Sum6;
   real_T rtb_Sum7;
+  real_T rtb_Sum8;
   real_T rtb_Sum_e;
   real_T rtb_Sum_p;
+  real_T rtb_TrigonometricFunction1;
   real_T rtb_y;
 
   /* Gain: '<S155>/Gain' incorporates:
@@ -55,8 +55,8 @@ void PMSMController_step(void)
    *  Inport: '<Root>/I_c'
    *  Sum: '<S155>/Sum'
    */
-  rtb_Sum_p = ((-0.5 * PMSMController_U.I_b + PMSMController_U.I_a) + -0.5 *
-               PMSMController_U.I_c) * 0.66666666666666663;
+  rtb_Sum4 = ((-0.5 * PMSMController_U.I_b + PMSMController_U.I_a) + -0.5 *
+              PMSMController_U.I_c) * 0.66666666666666663;
 
   /* MATLAB Function: '<Root>/wrap2pi' incorporates:
    *  Gain: '<Root>/Gain8'
@@ -75,28 +75,43 @@ void PMSMController_step(void)
   /* Trigonometry: '<S154>/Trigonometric Function1' incorporates:
    *  Gain: '<S154>/Gain'
    */
-  rtb_Sum6 = cos(-rtb_y);
+  rtb_Sum1_f = cos(-rtb_y);
 
-  /* Gain: '<S155>/Gain1' incorporates:
+  /* Sum: '<S154>/Sum1' incorporates:
+   *  Gain: '<S155>/Gain1'
    *  Gain: '<S155>/Gain3'
    *  Gain: '<S155>/Gain5'
    *  Inport: '<Root>/I_b'
    *  Inport: '<Root>/I_c'
    *  Sum: '<S155>/Sum1'
    */
-  rtb_Sum4 = (0.8660254037844386 * PMSMController_U.I_b + -0.8660254037844386 *
-              PMSMController_U.I_c) * 0.66666666666666663;
+  PMSMController_Y.Iq = (0.8660254037844386 * PMSMController_U.I_b +
+    -0.8660254037844386 * PMSMController_U.I_c) * 0.66666666666666663;
 
-  /* Trigonometry: '<S154>/Trigonometric Function' incorporates:
+  /* Gain: '<Root>/Gain11' incorporates:
    *  Gain: '<S154>/Gain'
+   *  Trigonometry: '<S154>/Trigonometric Function'
    */
-  rtb_Integrator_f = sin(-rtb_y);
+  PMSMController_Y.omega_e = sin(-rtb_y);
 
   /* Sum: '<S154>/Sum' incorporates:
    *  Product: '<S154>/Product'
    *  Product: '<S154>/Product1'
    */
-  rtb_Sum7 = rtb_Sum_p * rtb_Sum6 - rtb_Sum4 * rtb_Integrator_f;
+  PMSMController_Y.Id = rtb_Sum4 * rtb_Sum1_f - PMSMController_Y.Iq *
+    PMSMController_Y.omega_e;
+
+  /* Sum: '<Root>/Sum7' incorporates:
+   *  Inport: '<Root>/Id_ref'
+   */
+  rtb_Sum7 = PMSMController_U.Id_ref - PMSMController_Y.Id;
+
+  /* Sum: '<S154>/Sum1' incorporates:
+   *  Product: '<S154>/Product2'
+   *  Product: '<S154>/Product3'
+   */
+  PMSMController_Y.Iq = rtb_Sum4 * PMSMController_Y.omega_e +
+    PMSMController_Y.Iq * rtb_Sum1_f;
 
   /* Sum: '<S5>/Sum1' incorporates:
    *  Delay: '<S5>/Delay'
@@ -109,11 +124,18 @@ void PMSMController_step(void)
   /* Gain: '<Root>/Gain11' */
   PMSMController_Y.omega_e = 8.0 * rtb_Sum1_f;
 
-  /* Sum: '<S154>/Sum1' incorporates:
-   *  Product: '<S154>/Product2'
-   *  Product: '<S154>/Product3'
+  /* Sum: '<Root>/Sum4' incorporates:
+   *  DiscreteIntegrator: '<S89>/Integrator'
+   *  Fcn: '<S4>/Fcn'
+   *  Gain: '<S94>/Proportional Gain'
+   *  Sum: '<S98>/Sum'
    */
-  rtb_Sum4 = rtb_Sum_p * rtb_Integrator_f + rtb_Sum4 * rtb_Sum6;
+  rtb_Sum4 = (0.16619025137490004 * rtb_Sum7 +
+              PMSMController_DW.Integrator_DSTATE) + -PMSMController_Y.omega_e *
+    5.29e-5 * PMSMController_Y.Iq;
+
+  /* Trigonometry: '<S156>/Trigonometric Function1' */
+  rtb_TrigonometricFunction1 = cos(rtb_y);
 
   /* Sum: '<Root>/Sum6' incorporates:
    *  Inport: '<Root>/omega_ref'
@@ -124,15 +146,16 @@ void PMSMController_step(void)
    *  DiscreteIntegrator: '<S41>/Integrator'
    *  Gain: '<S46>/Proportional Gain'
    */
-  rtb_Sum_p = 9.42477796076938 * rtb_Sum6 + PMSMController_DW.Integrator_DSTATE;
+  rtb_Sum_p = 6.2831853071795862 * rtb_Sum6 +
+    PMSMController_DW.Integrator_DSTATE_d;
 
   /* Saturate: '<S48>/Saturation' */
-  if (rtb_Sum_p > 25.2) {
+  if (rtb_Sum_p > 6.3) {
     /* Saturate: '<S48>/Saturation' */
-    PMSMController_Y.T_ref = 25.2;
-  } else if (rtb_Sum_p < -25.2) {
+    PMSMController_Y.T_ref = 6.3;
+  } else if (rtb_Sum_p < -6.3) {
     /* Saturate: '<S48>/Saturation' */
-    PMSMController_Y.T_ref = -25.2;
+    PMSMController_Y.T_ref = -6.3;
   } else {
     /* Saturate: '<S48>/Saturation' */
     PMSMController_Y.T_ref = rtb_Sum_p;
@@ -143,7 +166,7 @@ void PMSMController_step(void)
   /* Sum: '<Root>/Sum8' incorporates:
    *  Gain: '<Root>/Gain5'
    */
-  rtb_Integrator_f = 7.9365079365079367 * PMSMController_Y.T_ref - rtb_Sum4;
+  rtb_Sum8 = 7.9365079365079367 * PMSMController_Y.T_ref - PMSMController_Y.Iq;
 
   /* Sum: '<Root>/Sum5' incorporates:
    *  Constant: '<S4>/Constant'
@@ -152,42 +175,24 @@ void PMSMController_step(void)
    *  Gain: '<S142>/Proportional Gain'
    *  Sum: '<S146>/Sum'
    */
-  rtb_Sum5 = (5.29e-5 * rtb_Sum7 + 0.0105) * PMSMController_Y.omega_e +
-    (0.24928537706235007 * rtb_Integrator_f +
-     PMSMController_DW.Integrator_DSTATE_d);
+  rtb_Sum1_b = (5.29e-5 * PMSMController_Y.Id + 0.0105) *
+    PMSMController_Y.omega_e + (0.16619025137490004 * rtb_Sum8 +
+    PMSMController_DW.Integrator_DSTATE_dp);
 
   /* Trigonometry: '<S156>/Trigonometric Function' */
-  rtb_Sum1_b = sin(rtb_y);
-
-  /* Sum: '<Root>/Sum7' incorporates:
-   *  Inport: '<Root>/Id_ref'
-   */
-  rtb_Sum7 = PMSMController_U.Id_ref - rtb_Sum7;
-
-  /* Sum: '<Root>/Sum4' incorporates:
-   *  DiscreteIntegrator: '<S89>/Integrator'
-   *  Fcn: '<S4>/Fcn'
-   *  Gain: '<S94>/Proportional Gain'
-   *  Sum: '<S98>/Sum'
-   */
-  rtb_Sum4 = (0.24928537706235007 * rtb_Sum7 +
-              PMSMController_DW.Integrator_DSTATE_e) + -PMSMController_Y.omega_e
-    * 5.29e-5 * rtb_Sum4;
-
-  /* Trigonometry: '<S156>/Trigonometric Function1' */
-  rtb_y = cos(rtb_y);
+  rtb_y = sin(rtb_y);
 
   /* Sum: '<S156>/Sum' incorporates:
    *  Product: '<S156>/Product'
    *  Product: '<S156>/Product1'
    */
-  rtb_Sum_e = rtb_Sum4 * rtb_y - rtb_Sum5 * rtb_Sum1_b;
+  rtb_Sum_e = rtb_Sum4 * rtb_TrigonometricFunction1 - rtb_Sum1_b * rtb_y;
 
   /* Sum: '<S156>/Sum1' incorporates:
    *  Product: '<S156>/Product2'
    *  Product: '<S156>/Product3'
    */
-  rtb_y = rtb_Sum4 * rtb_Sum1_b + rtb_Sum5 * rtb_y;
+  rtb_y = rtb_Sum4 * rtb_y + rtb_Sum1_b * rtb_TrigonometricFunction1;
 
   /* Outport: '<Root>/normalized voltages' incorporates:
    *  Constant: '<Root>/Constant4'
@@ -241,25 +246,24 @@ void PMSMController_step(void)
    */
   PMSMController_DW.Delay_DSTATE = 10000.0 * rtb_Sum4;
 
+  /* Update for DiscreteIntegrator: '<S89>/Integrator' incorporates:
+   *  Gain: '<S86>/Integral Gain'
+   */
+  PMSMController_DW.Integrator_DSTATE += 141.37166941154067 * rtb_Sum7 * 0.0001;
+
   /* Update for DiscreteIntegrator: '<S41>/Integrator' incorporates:
    *  Gain: '<S34>/Kb'
    *  Gain: '<S38>/Integral Gain'
    *  Sum: '<S34>/SumI2'
    *  Sum: '<S34>/SumI4'
    */
-  PMSMController_DW.Integrator_DSTATE += ((PMSMController_Y.T_ref - rtb_Sum_p) *
-    1.25E-6 + 1.1780972450961725E-5 * rtb_Sum6) * 0.0001;
+  PMSMController_DW.Integrator_DSTATE_d += ((PMSMController_Y.T_ref - rtb_Sum_p)
+    * 1.2499999999999999E-6 + 7.853981633974482E-6 * rtb_Sum6) * 0.0001;
 
   /* Update for DiscreteIntegrator: '<S137>/Integrator' incorporates:
    *  Gain: '<S134>/Integral Gain'
    */
-  PMSMController_DW.Integrator_DSTATE_d += 212.05750411731103 * rtb_Integrator_f
-    * 0.0001;
-
-  /* Update for DiscreteIntegrator: '<S89>/Integrator' incorporates:
-   *  Gain: '<S86>/Integral Gain'
-   */
-  PMSMController_DW.Integrator_DSTATE_e += 212.05750411731103 * rtb_Sum7 *
+  PMSMController_DW.Integrator_DSTATE_dp += 141.37166941154067 * rtb_Sum8 *
     0.0001;
 
   /* Update for Delay: '<Root>/Delay2' incorporates:

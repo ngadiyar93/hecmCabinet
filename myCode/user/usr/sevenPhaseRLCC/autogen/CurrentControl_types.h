@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'CurrentControl'.
  *
- * Model version                  : 2.23
+ * Model version                  : 2.24
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Fri Dec  2 09:31:32 2022
+ * C/C++ source code generated on : Tue Dec 13 10:08:47 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)

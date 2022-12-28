@@ -112,6 +112,14 @@ int cmd_sevenPhaseRLCC(int argc, char **argv)
         return CMD_SUCCESS;
     }
 
+    if (argc == 2 && strcmp("deinit", argv[1]) == 0) {
+        if (task_sevenPhaseRLCC_deinit() != SUCCESS) {
+            return CMD_FAILURE;
+        }
+
+        return CMD_SUCCESS;
+    }
+
     if (argc == 3 && strcmp("freq", argv[1]) == 0){
    		double freq = strtod(argv[2], NULL);
    		CurrentControl_U.we = freq*2*PI;

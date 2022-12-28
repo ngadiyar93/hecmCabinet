@@ -2,7 +2,7 @@
 #define CMD_SEVENPHASERLCC_H
 
 #define IdLim (5)
-#define IqLim (5)
+#define IqLim (150)
 
 // Called in app init function to register command with system
 void cmd_sevenPhaseRLCC_register(void);
@@ -12,3 +12,4 @@ void cmd_sevenPhaseRLCC_register(void);
 int cmd_sevenPhaseRLCC(int argc, char **argv);
 
 #endif // CMD_SEVENPHASERLCC_H
+

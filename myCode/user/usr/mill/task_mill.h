@@ -21,20 +21,9 @@
 #define PHASE_B_CURRENT_OFFSET (27.26)
 #define PHASE_C_CURRENT_OFFSET (27.44)
 
-// Encoder
-#define enc_theta_m_gain (1)
-#define theta_m_enc_offset_rad (0)
-
-#define Vdc (25)  // [V]
-
-typedef enum {
-    CABINET_CS_SUS_U = 0,
-    CABINET_CS_SUS_V,
-    CABINET_CS_SUS_W,
-    CABINET_CS_TOR_U,
-    CABINET_CS_TOR_V,
-    CABINET_CS_TOR_W,
-} cabinet_cs_e;
+//// Encoder
+#define enc_theta_m_gain (-1)
+#define theta_m_enc_offset_rad (5.08)
 
 // Called in app init function to set up task (or via command)
 int task_mill_init(void);

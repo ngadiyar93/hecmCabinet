@@ -1,8 +1,9 @@
 #ifndef CMD_RLCC_H
 #define CMD_RLCC_H
 
-#define IdLim (3)
-#define IqLim (3)
+#define IdLim (30)
+#define IqLim (30)
+#define freqLim (300)
 
 // Called in app init function to register command with system
 void cmd_rlCC_register(void);

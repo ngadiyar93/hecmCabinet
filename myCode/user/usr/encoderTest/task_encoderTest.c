@@ -1,6 +1,7 @@
 #ifdef APP_ENCODERTEST
 
 #include "usr/encoderTest/task_encoderTest.h"
+#include "usr/encoderTest/autogen/encoderSpeeedTest.h"
 #include "drv/led.h"
 #include "drv/encoder.h"
 #include "sys/scheduler.h"
@@ -11,7 +12,10 @@ static uint8_t led_pos = 0;
 static uint8_t led_color_idx = 0;
 #define NUM_LED_COLORS (7)
 double theta_enc = 0;
-double LOG_theta_Enc = 0;
+double LOG_theta_Encoder = 0;
+double LOG_theta_e_Enc = 0;
+double LOG_omega_Enc = 0;
+double LOG_omega_e_Enc = 0;
 
 // Scheduler TCB which holds task "context"
 static task_control_block_t tcb;
@@ -55,17 +59,17 @@ double static encoder_get_theta(void)
 	double theta = 0;
 
 	if (pos!= -1){
-		uint32_t bits = 10;
+		uint32_t bits = 14;
 		uint32_t PPR = 1<<bits;
 		theta = 2*PI*((double)pos/(double)PPR);
 		return theta;
 	}
 }
 
-static double read_encoder(void)
+ double read_encoder(void)
 {
 	double enc_gain = 1;
-	double enc_offset_rad = 0;
+	double enc_offset_rad = -0.413;
 	double theta_m_enc = enc_gain*encoder_get_theta();
 	theta_m_enc += enc_offset_rad;
 
@@ -83,7 +87,13 @@ static double read_encoder(void)
 void task_encoderTest_callback(void *arg)
 {
 	theta_enc = read_encoder();
-	LOG_theta_Enc = theta_enc;
+	encoderSpeeedTest_U.theta_m = theta_enc;
+	encoderSpeeedTest_step();
+	LOG_theta_Encoder = theta_enc;
+	LOG_theta_e_Enc = encoderSpeeedTest_Y.theta_e;
+	LOG_omega_Enc = (30/PI)*encoderSpeeedTest_Y.omega_m;
+	LOG_omega_e_Enc = encoderSpeeedTest_Y.omega_e;
+
 }
 
 void task_encoderTest_stats_print(void)

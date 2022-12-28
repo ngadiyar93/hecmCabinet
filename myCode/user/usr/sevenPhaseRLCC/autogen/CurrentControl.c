@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'CurrentControl'.
  *
- * Model version                  : 2.23
+ * Model version                  : 2.24
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Fri Dec  2 09:31:32 2022
+ * C/C++ source code generated on : Tue Dec 13 10:08:47 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -23,7 +23,6 @@
 #include <math.h>
 #include <string.h>
 #include "rt_nonfinite.h"
-#include <float.h>
 
 /* Block states (default storage) */
 DW_CurrentControl_T CurrentControl_DW;
@@ -101,42 +100,6 @@ void CurrentCon_ParkTransformationdq(const real_T rtu_u[2], real_T rtu_theta,
   dq_tmp_0 = cos(rtu_theta);
   rty_y[0] = dq_tmp_0 * rtu_u[0] + dq_tmp * rtu_u[1];
   rty_y[1] = -dq_tmp * rtu_u[0] + dq_tmp_0 * rtu_u[1];
-}
-
-real_T rt_modd_snf(real_T u0, real_T u1)
-{
-  real_T y;
-  y = u0;
-  if (u1 == 0.0) {
-    if (u0 == 0.0) {
-      y = u1;
-    }
-  } else if (rtIsNaN(u0) || rtIsNaN(u1) || rtIsInf(u0)) {
-    y = (rtNaN);
-  } else if (u0 == 0.0) {
-    y = 0.0 / u1;
-  } else if (rtIsInf(u1)) {
-    if ((u1 < 0.0) != (u0 < 0.0)) {
-      y = u1;
-    }
-  } else {
-    boolean_T yEq;
-    y = fmod(u0, u1);
-    yEq = (y == 0.0);
-    if ((!yEq) && (u1 > floor(u1))) {
-      real_T q;
-      q = fabs(u0 / u1);
-      yEq = !(fabs(q - floor(q + 0.5)) > DBL_EPSILON * q);
-    }
-
-    if (yEq) {
-      y = u1 * 0.0;
-    } else if ((u0 < 0.0) != (u1 < 0.0)) {
-      y += u1;
-    }
-  }
-
-  return y;
 }
 
 /* Function for MATLAB Function: '<Root>/Inverse Clarke Transformation' */
@@ -865,7 +828,7 @@ void CurrentControl_step(void)
   real_T rtb_y_m[2];
   real_T rtb_y_nu[2];
   real_T rtb_y_p[2];
-  real_T rtb_MathFunction2;
+  real_T b_re;
   real_T rtb_Sum;
   int32_T ar;
   int32_T b_ic;
@@ -903,14 +866,14 @@ void CurrentControl_step(void)
     for (ar = 0; ar < 7; ar++) {
       rtb_Sum = (real_T)(br * ar) * 0.89759790102565518;
       if (rtb_Sum == 0.0) {
-        rtb_MathFunction2 = 1.0;
+        b_re = 1.0;
       } else {
-        rtb_MathFunction2 = cos(rtb_Sum);
+        b_re = cos(rtb_Sum);
         rtb_Sum = sin(rtb_Sum);
       }
 
       vcol = (ar << 2) + br;
-      a[vcol].re = 0.2857142857142857 * rtb_MathFunction2;
+      a[vcol].re = 0.2857142857142857 * b_re;
       a[vcol].im = 0.2857142857142857 * rtb_Sum;
     }
   }
@@ -930,11 +893,11 @@ void CurrentControl_step(void)
       vec_0 = vec[vcol];
       ar = (br << 2) + vcol;
       rtb_Sum = a[ar].re;
-      rtb_MathFunction2 = x_0[br].im;
+      b_re = x_0[br].im;
       vec_tmp = a[ar].im;
       vec_tmp_0 = x_0[br].re;
-      vec_0.re += rtb_Sum * vec_tmp_0 - vec_tmp * rtb_MathFunction2;
-      vec_0.im += rtb_Sum * rtb_MathFunction2 + vec_tmp * vec_tmp_0;
+      vec_0.re += rtb_Sum * vec_tmp_0 - vec_tmp * b_re;
+      vec_0.im += rtb_Sum * b_re + vec_tmp * vec_tmp_0;
       vec[vcol] = vec_0;
     }
   }
@@ -950,23 +913,10 @@ void CurrentControl_step(void)
   rtb_y_a[6] = vec[3].re;
   rtb_y_a[7] = vec[3].im;
 
-  /* Sum: '<Root>/Sum7' incorporates:
-   *  Delay: '<Root>/Delay'
-   *  Gain: '<Root>/Gain9'
-   *  Inport generated from: '<Root>/we'
+  /* MATLAB Function: '<Root>/Park Transformation dq' incorporates:
+   *  Constant: '<Root>/Constant3'
    */
-  CurrentControl_DW.Delay_DSTATE += 4.0E-5 * CurrentControl_U.we;
-
-  /* Math: '<Root>/Math Function1' incorporates:
-   *  Constant: '<Root>/Constant10'
-   *  Delay: '<Root>/Delay'
-   */
-  CurrentControl_Y.LOG1_pos_theta = rt_modd_snf(CurrentControl_DW.Delay_DSTATE,
-    6.2831853071795862);
-
-  /* MATLAB Function: '<Root>/Park Transformation dq' */
-  CurrentCon_ParkTransformationdq(&rtb_y_a[2], CurrentControl_Y.LOG1_pos_theta,
-    rtb_y_nu);
+  CurrentCon_ParkTransformationdq(&rtb_y_a[2], 0.0, rtb_y_nu);
 
   /* Sum: '<S9>/Sum' incorporates:
    *  Inport generated from: '<Root>/id_ref'
@@ -976,7 +926,7 @@ void CurrentControl_step(void)
   /* Sum: '<S9>/Sum2' incorporates:
    *  Delay: '<S9>/Delay'
    */
-  CurrentControl_DW.Delay_DSTATE_g += rtb_Sum;
+  CurrentControl_DW.Delay_DSTATE += rtb_Sum;
 
   /* Sum: '<Root>/Subtract' incorporates:
    *  Delay: '<S9>/Delay'
@@ -988,8 +938,8 @@ void CurrentControl_step(void)
    *  Product: '<Root>/Product'
    *  Sum: '<S9>/Sum1'
    */
-  CurrentControl_Y.LOG1_v_sv_vd_ref = (4.0E-5 * CurrentControl_DW.Delay_DSTATE_g
-    * 1382.3007675795091 + 6.2831853071795862 * rtb_Sum) + -0.005 *
+  CurrentControl_Y.LOG1_v_sv_vd_ref = (4.0E-5 * CurrentControl_DW.Delay_DSTATE *
+    15.079644737231009 + 0.031415926535897934 * rtb_Sum) + -5.0E-5 *
     CurrentControl_U.we * rtb_y_nu[1];
 
   /* Sum: '<S10>/Sum' incorporates:
@@ -1013,22 +963,19 @@ void CurrentControl_step(void)
    *  Sum: '<S10>/Sum1'
    */
   CurrentControl_Y.LOG1_v_sv_vq_ref = (4.0E-5 * CurrentControl_DW.Delay_DSTATE_d
-    * 1382.3007675795091 + 6.2831853071795862 * rtb_Sum) + 0.005 *
+    * 15.079644737231009 + 0.031415926535897934 * rtb_Sum) + 5.0E-5 *
     CurrentControl_U.we * rtb_y_nu[0];
 
-  /* MATLAB Function: '<Root>/Inverse Park Transformation dq' */
-  Cur_InverseParkTransformationdq(CurrentControl_Y.LOG1_v_sv_vd_ref,
-    CurrentControl_Y.LOG1_v_sv_vq_ref, CurrentControl_Y.LOG1_pos_theta, rtb_y_e);
-
-  /* Math: '<Root>/Math Function2' incorporates:
+  /* MATLAB Function: '<Root>/Inverse Park Transformation dq' incorporates:
    *  Constant: '<Root>/Constant3'
-   *  Gain: '<Root>/Gain20'
    */
-  rtb_MathFunction2 = rt_modd_snf(3.0 * CurrentControl_Y.LOG1_pos_theta,
-    6.2831853071795862);
+  Cur_InverseParkTransformationdq(CurrentControl_Y.LOG1_v_sv_vd_ref,
+    CurrentControl_Y.LOG1_v_sv_vq_ref, 0.0, rtb_y_e);
 
-  /* MATLAB Function: '<Root>/Park Transformation xy' */
-  CurrentCon_ParkTransformationdq(&rtb_y_a[4], rtb_MathFunction2, rtb_y_m);
+  /* MATLAB Function: '<Root>/Park Transformation xy' incorporates:
+   *  Constant: '<Root>/Constant3'
+   */
+  CurrentCon_ParkTransformationdq(&rtb_y_a[4], 0.0, rtb_y_m);
 
   /* Sum: '<S11>/Sum' incorporates:
    *  Inport generated from: '<Root>/id3_ref'
@@ -1051,9 +998,9 @@ void CurrentControl_step(void)
    *  Product: '<Root>/Product2'
    *  Sum: '<S11>/Sum1'
    */
-  CurrentControl_Y.LOG1_v_sv_vd3_ref = 3.0 * CurrentControl_U.we * -0.005 *
-    rtb_y_m[1] + (4.0E-5 * CurrentControl_DW.Delay_DSTATE_c * 1382.3007675795091
-                  + 6.2831853071795862 * rtb_Sum);
+  CurrentControl_Y.LOG1_v_sv_vd3_ref = 3.0 * CurrentControl_U.we * -5.0E-5 *
+    rtb_y_m[1] + (4.0E-5 * CurrentControl_DW.Delay_DSTATE_c * 15.079644737231009
+                  + 0.031415926535897934 * rtb_Sum);
 
   /* Sum: '<S13>/Sum' incorporates:
    *  Inport generated from: '<Root>/iq3_ref'
@@ -1063,7 +1010,7 @@ void CurrentControl_step(void)
   /* Sum: '<S13>/Sum2' incorporates:
    *  Delay: '<S13>/Delay'
    */
-  CurrentControl_DW.Delay_DSTATE_gq += rtb_Sum;
+  CurrentControl_DW.Delay_DSTATE_g += rtb_Sum;
 
   /* Sum: '<Root>/Subtract3' incorporates:
    *  Delay: '<S13>/Delay'
@@ -1076,23 +1023,20 @@ void CurrentControl_step(void)
    *  Product: '<Root>/Product3'
    *  Sum: '<S13>/Sum1'
    */
-  CurrentControl_Y.LOG1_v_sv_vq3_ref = 3.0 * CurrentControl_U.we * 0.005 *
-    rtb_y_m[0] + (4.0E-5 * CurrentControl_DW.Delay_DSTATE_gq *
-                  1382.3007675795091 + 6.2831853071795862 * rtb_Sum);
+  CurrentControl_Y.LOG1_v_sv_vq3_ref = 3.0 * CurrentControl_U.we * 5.0E-5 *
+    rtb_y_m[0] + (4.0E-5 * CurrentControl_DW.Delay_DSTATE_g * 15.079644737231009
+                  + 0.031415926535897934 * rtb_Sum);
 
-  /* MATLAB Function: '<Root>/Inverse Park Transformation xy' */
-  Cur_InverseParkTransformationdq(CurrentControl_Y.LOG1_v_sv_vd3_ref,
-    CurrentControl_Y.LOG1_v_sv_vq3_ref, rtb_MathFunction2, rtb_y_b);
-
-  /* Math: '<Root>/Math Function3' incorporates:
+  /* MATLAB Function: '<Root>/Inverse Park Transformation xy' incorporates:
    *  Constant: '<Root>/Constant3'
-   *  Gain: '<Root>/Gain21'
    */
-  rtb_MathFunction2 = rt_modd_snf(5.0 * CurrentControl_Y.LOG1_pos_theta,
-    6.2831853071795862);
+  Cur_InverseParkTransformationdq(CurrentControl_Y.LOG1_v_sv_vd3_ref,
+    CurrentControl_Y.LOG1_v_sv_vq3_ref, 0.0, rtb_y_b);
 
-  /* MATLAB Function: '<Root>/Park Transformation xy1' */
-  CurrentCon_ParkTransformationdq(&rtb_y_a[6], rtb_MathFunction2, rtb_y);
+  /* MATLAB Function: '<Root>/Park Transformation xy1' incorporates:
+   *  Constant: '<Root>/Constant3'
+   */
+  CurrentCon_ParkTransformationdq(&rtb_y_a[6], 0.0, rtb_y);
 
   /* Sum: '<S12>/Sum' incorporates:
    *  Inport generated from: '<Root>/id5_ref'
@@ -1115,9 +1059,9 @@ void CurrentControl_step(void)
    *  Product: '<Root>/Product4'
    *  Sum: '<S12>/Sum1'
    */
-  CurrentControl_Y.LOG1_v_sv_vd5_ref = 5.0 * CurrentControl_U.we * -0.005 *
-    rtb_y[1] + (4.0E-5 * CurrentControl_DW.Delay_DSTATE_i * 1382.3007675795091 +
-                6.2831853071795862 * rtb_Sum);
+  CurrentControl_Y.LOG1_v_sv_vd5_ref = 5.0 * CurrentControl_U.we * -5.0E-5 *
+    rtb_y[1] + (4.0E-5 * CurrentControl_DW.Delay_DSTATE_i * 15.079644737231009 +
+                0.031415926535897934 * rtb_Sum);
 
   /* Sum: '<S14>/Sum' incorporates:
    *  Inport generated from: '<Root>/iq5_ref'
@@ -1139,13 +1083,15 @@ void CurrentControl_step(void)
    *  Product: '<Root>/Product5'
    *  Sum: '<S14>/Sum1'
    */
-  CurrentControl_Y.LOG1_v_sv_vq5_ref = 5.0 * CurrentControl_U.we * 0.005 *
-    rtb_y[0] + (4.0E-5 * CurrentControl_DW.Delay_DSTATE_m * 1382.3007675795091 +
-                6.2831853071795862 * rtb_Sum);
+  CurrentControl_Y.LOG1_v_sv_vq5_ref = 5.0 * CurrentControl_U.we * 5.0E-5 *
+    rtb_y[0] + (4.0E-5 * CurrentControl_DW.Delay_DSTATE_m * 15.079644737231009 +
+                0.031415926535897934 * rtb_Sum);
 
-  /* MATLAB Function: '<Root>/Inverse Park Transformation xy1' */
+  /* MATLAB Function: '<Root>/Inverse Park Transformation xy1' incorporates:
+   *  Constant: '<Root>/Constant3'
+   */
   Cur_InverseParkTransformationdq(CurrentControl_Y.LOG1_v_sv_vd5_ref,
-    CurrentControl_Y.LOG1_v_sv_vq5_ref, rtb_MathFunction2, rtb_y_p);
+    CurrentControl_Y.LOG1_v_sv_vq5_ref, 0.0, rtb_y_p);
 
   /* MATLAB Function: '<Root>/Inverse Clarke Transformation' incorporates:
    *  Constant: '<Root>/Constant2'

@@ -30,7 +30,7 @@
 #define PHASE_A_CURRENT_OFFSET (93.78)
 
 
-#define Vdc (50)  // [V]
+#define Vdc (21)  // [V]
 
 typedef enum {
     CABINET_CS_PH_U = 0,
@@ -47,8 +47,13 @@ int read_cs(cabinet_cs_e cs, double *adc_volts_out);
 // Called in app init function to set up task (or via command)
 int task_sevenPhaseRLCC_init(void);
 
+// Called in app init function to set up task (or via command)
+int task_sevenPhaseRLCC_deinit(void);
+
 // Callback function which scheduler calls periodically
 void task_sevenPhaseRLCC_callback(void *arg);
+
+int task_read_Bfield(void);
 
 
 
